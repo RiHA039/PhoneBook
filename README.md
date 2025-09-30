@@ -174,5 +174,6 @@ class ContactListViewController: UIViewController, UITableViewDataSource, UITabl
 }    
 
 ```
-<img width="499" height="945" alt="스크린샷 2025-09-30 19 40 32" src="https://github.com/user-attachments/assets/61f9c659-53ae-4d73-982f-6f9981b09623" />
+<img width="499" height="945" alt="스크린샷 2025-09-30 19 44 36" src="https://github.com/user-attachments/assets/ea888bb3-7ef5-4c62-ae30-6b51c6dfdf2b" />
+
 
