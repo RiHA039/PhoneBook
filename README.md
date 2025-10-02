@@ -338,3 +338,76 @@ class PhoneBookViewController: UIViewController {
         navigationController?.pushViewController(vc, animated: true)
     }
 ```
+
+### Lv4.
+>  - `랜덤 이미지 생성` 버튼을 구현합니다.
+> - 버튼을 클릭할 때마다 랜덤한 포켓몬 이미지를 불러옵니다.
+>- 포켓몬 API를 생성해서 랜덤 포켓몬 이미지를 프로필로 지정해봅시다.
+>- API 명세 (`GET` 메서드 사용)
+>- URL: `https://pokeapi.co/api/v2/pokemon/{1~1000사이의랜덤숫자입력} `
+
+```
+// PokeAPI JSON을 해석하기 위해 Codable 모델 정의
+
+// 포켓몬 전체 정보 항목
+struct Pokemon: Codable {
+    let id: Int            // 포켓몬 고유 번호
+    let name: String       // 포켓몬 이름
+    let height: Int        // 키
+    let weight: Int        // 몸무게
+    let sprites: Sprites   // 이미지 정보
+}
+
+// sprites 안의 구조
+struct Sprites: Codable {
+    let front_default: String // 정면 이미지 URL
+}
+
+```
+
+```
+    
+    // 랜덤 이미지 불러오기
+    @objc private func loadRandomImage() {
+        // 1~1025번 사이 랜덤 포켓몬 선택
+        let randomID = Int.random(in: 1...1000)
+        
+        let endpoint = "https://pokeapi.co/api/v2/pokemon/\(randomID)"
+                        
+        guard let apiURL = URL(string: endpoint) else { return }
+        
+        // 포켓몬 API 요청(GET)
+        URLSession.shared.dataTask(with: apiURL) { data, response, error in
+            
+            if let error = error {
+                print("네트워크 오류", error)
+                return
+            }
+            guard let data = data else { return }
+            
+            do {
+                let decoder = JSONDecoder()
+                let pokemon = try decoder.decode(Pokemon.self, from: data)
+                
+                print("포켓몬 이름:", pokemon.name, "번호:", pokemon.id)
+                print("이미지 URL:", pokemon.sprites.front_default)
+                
+                if let imageURL = URL(string: pokemon.sprites.front_default) {
+                    URLSession.shared.dataTask(with: imageURL) { imgData, _, _ in
+                        if let imgData = imgData, let image = UIImage(data: imgData) {
+                            DispatchQueue.main.async {
+                                self.profileImageView.image = image
+                            }
+                        }
+                    }.resume()
+                }
+            }catch {
+                print("JSON 디코딩 실패", error)
+                
+                
+            }
+        }.resume()
+    }
+}
+```
+
